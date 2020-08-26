@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="City or State">
+    <ul class="suggestions">
+      <li>Filter for a city</li>
+      <li>or a state</li>
+    </ul>
+  </form>
+
+
+</body>
+<script>
+
+  const endpoint = `https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json`;
+  const searchInput = document.querySelector(".search");
+  const suggestions = document.querySelector(".suggestions")
+  searchInput.addEventListener('keyup', displayMatches);
+  let cities = []
+
+
+  window.onload = function()
+  {
+      fetch(endpoint)
+      .then(response => {
+        return response.json();
+      })
+      .then(allCities => {
+        cities = allCities
+      })
+      .catch(error => alert(error))
+  }
+  
+  // function filterData(wordToMatch)
+  // {
+  //   return cities.filter((x) => {
+  //     return x.city.toLowerCase().includes(wordToMatch.toLowerCase()) || x.state.toLowerCase().includes(wordToMatch.toLowerCase())
+  //   })
+  // }
+  function displayMatches()
+  {
+    if(this.value.trim().length !==0)
+    {
+      //const citiesToPresent = filterData(this.value);
+      const htmlArary = cities.filter((x) => {
+        return x.city.toLowerCase().includes(this.value.toLowerCase()) || x.state.toLowerCase().includes(this.value.toLowerCase())
+      }).map((x) => {
+        const city = x.city.toLowerCase().replace(this.value.toLowerCase(), `<span class='hl'>${this.value}</span>`);
+        const state = x.state.toLowerCase().replace(this.value.toLowerCase(), `<span class='hl'>${this.value}</span>`);
+        return `<li>
+        <span class='name'>${city}, ${state}</span>
+        <span class='population'>${x.population}</span></li>`
+      }).join("");
+
+      suggestions.innerHTML = htmlArary;
+    }
+    else
+    {
+      suggestions.innerHTML = ` <li>Filter for a city</li>
+        <li>or a state</li>`;
+    }
+  }
+  </script>
+</html>
